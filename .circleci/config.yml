@@ -1,0 +1,22 @@
+version: 2
+jobs:
+ build:
+   machine: true
+   steps:
+     - checkout
+
+     # login to docker hub
+     - run: echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
+
+     # build the application image
+     - run: docker build -t codeblick/shopware-6:php-7.4
+
+     # deploy the image
+     - run: docker push codeblick/shopware-6:php-7.4
+
+workflows:
+  version: 2
+  build_and_push:
+    jobs:
+      - build:
+          context: docker
