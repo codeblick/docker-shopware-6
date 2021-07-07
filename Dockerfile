@@ -68,7 +68,8 @@ RUN curl -sL https://deb.nodesource.com/setup_12.x | bash && \
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-RUN usermod --non-unique --uid 1000 www-data
-RUN groupmod --non-unique --gid 1000 www-data
+RUN chown www-data:www-data /var/www && \
+    usermod --non-unique --uid 1000 www-data && \
+    groupmod --non-unique --gid 1000 www-data
 
 USER www-data
