@@ -55,6 +55,9 @@ RUN docker-php-ext-install \
 RUN pecl install apcu && \
     docker-php-ext-enable apcu
 
+ARG WITH_XDEBUG
+RUN if [ "$WITH_XDEBUG" = "1" ] ; then pecl install xdebug && docker-php-ext-enable xdebug; fi
+
 ADD etc/php-config.ini /usr/local/etc/php/conf.d/php-config.ini
 
 RUN a2enmod rewrite
