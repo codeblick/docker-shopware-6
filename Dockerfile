@@ -17,6 +17,11 @@ ENV APCU_ENABLE_CLI=1
 
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 
+ENV PHP_XDEBUG=0
+ENV PHP_XDEBUG_HOST=docker.host
+ENV PHP_XDEBUG_IDEKEY=VSCODE
+ENV PHP_XDEBUG_PORT=9000
+
 RUN apt-get update
 RUN apt-get install -y \
         # ext-gd
