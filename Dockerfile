@@ -1,4 +1,6 @@
-FROM php:7.4-apache
+ARG PHP_VERSION
+
+FROM php:${PHP_VERSION}-apache
 
 ENV PHP_MAX_EXECUTION_TIME=30
 ENV PHP_MEMORY_LIMIT=512M
@@ -48,7 +50,6 @@ RUN docker-php-ext-configure intl
 RUN docker-php-ext-install \
         gd \
         iconv \
-        json \
         pdo \
         pdo_mysql \
         mbstring \
@@ -57,6 +58,9 @@ RUN docker-php-ext-install \
         intl \
         opcache \
         soap
+
+RUN if [ "$PHP_VERSION" = "7.4" ] ; then docker-php-ext-install json; fi
+
 RUN pecl install apcu && \
     docker-php-ext-enable apcu
 
