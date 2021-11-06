@@ -71,6 +71,7 @@ ADD etc/php-config.ini /usr/local/etc/php/conf.d/php-config.ini
 
 RUN a2enmod rewrite
 RUN a2enmod headers
+RUN a2enmod expires
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
