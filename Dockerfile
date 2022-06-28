@@ -43,6 +43,8 @@ RUN apt-get install -y \
         # intl
         zlib1g-dev \
         libicu-dev \
+        # xsl
+        libxslt1-dev \
         g++ \
         wget
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg
@@ -57,7 +59,8 @@ RUN docker-php-ext-install \
         zip \
         intl \
         opcache \
-        soap
+        soap \
+        xsl
 
 RUN if [ "$PHP_VERSION" = "7.4" ] ; then docker-php-ext-install json; fi
 
