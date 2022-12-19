@@ -65,11 +65,12 @@ RUN docker-php-ext-install \
         soap \
         xsl
 
-RUN pecl install apcu && \
+RUN pecl install apcu; \
     docker-php-ext-enable apcu
 
-RUN pecl install redis && \
-    docker-php-ext-enable redis
+RUN mkdir -p /usr/src/php/ext/redis; \
+	curl -fsSL https://pecl.php.net/get/redis --ipv4 | tar xvz -C "/usr/src/php/ext/redis" --strip 1; \
+	docker-php-ext-install redis
 
 ARG WITH_XDEBUG
 RUN if [ "$WITH_XDEBUG" = "1" ] ; then pecl install xdebug && docker-php-ext-enable xdebug; fi
@@ -82,14 +83,14 @@ RUN a2enmod expires
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
-RUN curl -sL https://deb.nodesource.com/setup_16.x | bash && \
+RUN curl -sL https://deb.nodesource.com/setup_16.x | bash; \
     apt-get install -y \
         nodejs
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-RUN chown www-data:www-data /var/www && \
-    usermod --non-unique --uid 1000 www-data && \
+RUN chown www-data:www-data /var/www; \
+    usermod --non-unique --uid 1000 www-data; \
     groupmod --non-unique --gid 1000 www-data
 
 USER www-data
