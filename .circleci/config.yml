@@ -7,12 +7,6 @@ jobs:
 
       - run: echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
 
-      - run: docker build -q -t codeblick/shopware-6:php-7.4 --build-arg PHP_VERSION=7.4 .
-      - run: docker push codeblick/shopware-6:php-7.4
-
-      - run: docker build -q -t codeblick/shopware-6:php-7.4-xdebug --build-arg PHP_VERSION=7.4 --build-arg WITH_XDEBUG=1 .
-      - run: docker push codeblick/shopware-6:php-7.4-xdebug
-
       - run: docker build -q -t codeblick/shopware-6:php-8.0 --build-arg PHP_VERSION=8.0 .
       - run: docker push codeblick/shopware-6:php-8.0
 

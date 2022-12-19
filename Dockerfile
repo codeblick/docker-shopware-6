@@ -63,9 +63,8 @@ RUN docker-php-ext-install \
         intl \
         opcache \
         soap \
-        xsl
-
-RUN if [ "$PHP_VERSION" = "7.4" ] ; then docker-php-ext-install json; fi
+        xsl \
+        redis
 
 RUN pecl install apcu && \
     docker-php-ext-enable apcu
