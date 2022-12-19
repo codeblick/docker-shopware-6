@@ -63,11 +63,13 @@ RUN docker-php-ext-install \
         intl \
         opcache \
         soap \
-        xsl \
-        redis
+        xsl
 
 RUN pecl install apcu && \
     docker-php-ext-enable apcu
+
+RUN pecl install redis && \
+    docker-php-ext-enable redis
 
 ARG WITH_XDEBUG
 RUN if [ "$WITH_XDEBUG" = "1" ] ; then pecl install xdebug && docker-php-ext-enable xdebug; fi
