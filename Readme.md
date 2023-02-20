@@ -2,10 +2,12 @@
 
 ## Tags
 
-- codeblick/shopware-6:php-7.4
-- codeblick/shopware-6:php-7.4-xdebug
 - codeblick/shopware-6:php-8.0
 - codeblick/shopware-6:php-8.0-xdebug
+- codeblick/shopware-6:php-8.1
+- codeblick/shopware-6:php-8.1-xdebug
+- codeblick/shopware-6:php-8.2
+- codeblick/shopware-6:php-8.2-xdebug
 
 # Environment variables (default)
 

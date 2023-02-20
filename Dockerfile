@@ -26,51 +26,53 @@ ENV PHP_XDEBUG_HOST=docker.host
 ENV PHP_XDEBUG_PORT=9000
 ENV PHP_XDEBUG_IDEKEY=VSCODE
 
+ENV COMPOSER_PROCESS_TIMEOUT=900
+
 RUN apt-get update
 RUN apt-get install -y \
-        # ext-gd
-        libfreetype6-dev \
-        libjpeg62-turbo-dev \
-        libpng-dev \
-        # ext-curl
-        curl \
-        libcurl4-gnutls-dev \
-        # ext-xml
-        libxml2-dev \
-        # ext-mbstring
-        libonig-dev \
-        # ext-zip
-        zip \
-        libzip-dev \
-        # intl
-        zlib1g-dev \
-        libicu-dev \
-        # xsl
-        libxslt1-dev \
-        g++ \
-        wget \
-        jq
+    # ext-gd
+    libfreetype6-dev \
+    libjpeg62-turbo-dev \
+    libpng-dev \
+    # ext-curl
+    curl \
+    libcurl4-gnutls-dev \
+    # ext-xml
+    libxml2-dev \
+    # ext-mbstring
+    libonig-dev \
+    # ext-zip
+    zip \
+    libzip-dev \
+    # intl
+    zlib1g-dev \
+    libicu-dev \
+    # xsl
+    libxslt1-dev \
+    g++ \
+    wget \
+    jq
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg
 RUN docker-php-ext-configure intl
 RUN docker-php-ext-install \
-        gd \
-        iconv \
-        pdo \
-        pdo_mysql \
-        mbstring \
-        xml \
-        zip \
-        intl \
-        opcache \
-        soap \
-        xsl
+    gd \
+    iconv \
+    pdo \
+    pdo_mysql \
+    mbstring \
+    xml \
+    zip \
+    intl \
+    opcache \
+    soap \
+    xsl
 
 RUN pecl install apcu; \
     docker-php-ext-enable apcu
 
 RUN mkdir -p /usr/src/php/ext/redis; \
-	curl -fsSL https://pecl.php.net/get/redis --ipv4 | tar xvz -C "/usr/src/php/ext/redis" --strip 1; \
-	docker-php-ext-install redis
+    curl -fsSL https://pecl.php.net/get/redis --ipv4 | tar xvz -C "/usr/src/php/ext/redis" --strip 1; \
+    docker-php-ext-install redis
 
 ARG WITH_XDEBUG
 RUN if [ "$WITH_XDEBUG" = "1" ] ; then pecl install xdebug && docker-php-ext-enable xdebug; fi
@@ -85,7 +87,7 @@ RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
 
 RUN curl -sL https://deb.nodesource.com/setup_16.x | bash; \
     apt-get install -y \
-        nodejs
+    nodejs
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
