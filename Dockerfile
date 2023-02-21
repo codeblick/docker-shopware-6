@@ -89,7 +89,8 @@ RUN curl -sL https://deb.nodesource.com/setup_16.x | bash; \
     apt-get install -y \
     nodejs
 
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+RUN curl -s -o /usr/local/bin/composer https://getcomposer.org/download/2.4.0/composer.phar && \
+    chmod +x /usr/local/bin/composer
 
 RUN chown www-data:www-data /var/www; \
     usermod --non-unique --uid 1000 www-data; \
