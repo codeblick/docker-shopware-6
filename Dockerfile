@@ -89,7 +89,7 @@ RUN curl -sL https://deb.nodesource.com/setup_16.x | bash; \
     apt-get install -y \
     nodejs
 
-ENV NVM_DIR /usr/local/nvm
+ENV NVM_DIR /.nvm
 ENV NODE_VERSION 16.19.1
 
 # Install nvm with node and npm
