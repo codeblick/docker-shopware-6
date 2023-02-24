@@ -85,15 +85,12 @@ RUN a2enmod expires
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
-RUN curl -sL https://deb.nodesource.com/setup_16.x | bash; \
-    apt-get install -y \
-    nodejs
-
 ENV NVM_DIR /.nvm
 ENV NODE_VERSION 16.19.1
 
 # Install nvm with node and npm
-RUN curl https://raw.githubusercontent.com/creationix/nvm/v0.39.3/install.sh | bash \
+RUN mkdir $NVM_DIR \
+    && curl https://raw.githubusercontent.com/creationix/nvm/v0.39.3/install.sh | bash \
     && . $NVM_DIR/nvm.sh \
     && nvm install $NODE_VERSION \
     && nvm alias default $NODE_VERSION \
