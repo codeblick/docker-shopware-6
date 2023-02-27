@@ -85,28 +85,28 @@ RUN a2enmod expires
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
-# nvm environment variables
-ENV NVM_DIR /.nvm
-ENV NODE_VERSION 16.19.1
-
-# install nvm
-RUN mkdir $NVM_DIR \
-    && curl https://raw.githubusercontent.com/creationix/nvm/v0.39.3/install.sh | bash \
-    && chmod +x $NVM_DIR/nvm.sh
-
-# install node and npm    \
-RUN . $NVM_DIR/nvm.sh \
-    && nvm install $NODE_VERSION \
-    && nvm alias default $NODE_VERSION \
-    && nvm use default
-
-# add node and npm to path so the commands are available
-ENV NODE_PATH $NVM_DIR/versions/node/v$NODE_VERSION/lib/node_modules
-ENV PATH      $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
-
-# confirm installation
-RUN node -v
-RUN npm -v
+## nvm environment variables
+#ENV NVM_DIR /.nvm
+#ENV NODE_VERSION 16.19.1
+#
+## install nvm
+#RUN mkdir $NVM_DIR \
+#    && curl https://raw.githubusercontent.com/creationix/nvm/v0.39.3/install.sh | bash \
+#    && chmod +x $NVM_DIR/nvm.sh
+#
+## install node and npm    \
+#RUN . $NVM_DIR/nvm.sh \
+#    && nvm install $NODE_VERSION \
+#    && nvm alias default $NODE_VERSION \
+#    && nvm use default
+#
+## add node and npm to path so the commands are available
+#ENV NODE_PATH $NVM_DIR/versions/node/v$NODE_VERSION/lib/node_modules
+#ENV PATH      $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
+#
+## confirm installation
+#RUN node -v
+#RUN npm -v
 
 RUN curl -s -o /usr/local/bin/composer https://getcomposer.org/download/2.4.0/composer.phar && \
     chmod +x /usr/local/bin/composer
