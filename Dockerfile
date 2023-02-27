@@ -94,7 +94,7 @@ RUN mkdir $NVM_DIR \
     && curl https://raw.githubusercontent.com/creationix/nvm/v0.39.3/install.sh | bash
 
 # install node and npm    \
-RUN source $NVM_DIR/nvm.sh \
+RUN $NVM_DIR/nvm.sh \
     && nvm install $NODE_VERSION \
     && nvm alias default $NODE_VERSION \
     && nvm use default
