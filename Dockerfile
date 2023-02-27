@@ -95,7 +95,7 @@ RUN mkdir $NVM_DIR \
     && chmod +x $NVM_DIR/nvm.sh
 
 # install node and npm    \
-RUN $NVM_DIR/nvm.sh \
+RUN . $NVM_DIR/nvm.sh \
     && nvm install $NODE_VERSION \
     && nvm alias default $NODE_VERSION \
     && nvm use default
