@@ -96,9 +96,6 @@ RUN mkdir $NVM_DIR \
     && nvm alias default $NODE_VERSION \
     && nvm use default
 
-ENV NODE_PATH $NVM_DIR/v$NODE_VERSION/lib/node_modules
-ENV PATH      $NVM_DIR/v$NODE_VERSION/bin:$PATH
-
 RUN curl -s -o /usr/local/bin/composer https://getcomposer.org/download/2.4.0/composer.phar && \
     chmod +x /usr/local/bin/composer
 
