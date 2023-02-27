@@ -85,7 +85,11 @@ RUN a2enmod expires
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
-ENV NVM_DIR /.nvm
+RUN curl -sL https://deb.nodesource.com/setup_16.x | bash; \
+    apt-get install -y \
+    nodejs
+
+ENV NVM_DIR /usr/local/nvm
 ENV NODE_VERSION 16.19.1
 
 # Install nvm with node and npm
@@ -95,6 +99,9 @@ RUN mkdir $NVM_DIR \
     && nvm install $NODE_VERSION \
     && nvm alias default $NODE_VERSION \
     && nvm use default
+
+ENV NODE_PATH $NVM_DIR/versions/node/v$NODE_VERSION/lib/node_modules
+ENV PATH      $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
 
 RUN curl -s -o /usr/local/bin/composer https://getcomposer.org/download/2.4.0/composer.phar && \
     chmod +x /usr/local/bin/composer
