@@ -91,7 +91,8 @@ ENV NODE_VERSION 16.19.1
 
 # install nvm
 RUN mkdir $NVM_DIR \
-    && curl https://raw.githubusercontent.com/creationix/nvm/v0.39.3/install.sh | bash
+    && curl https://raw.githubusercontent.com/creationix/nvm/v0.39.3/install.sh | bash \
+    && chmod +x $NVM_DIR/nvm.sh
 
 # install node and npm    \
 RUN $NVM_DIR/nvm.sh \
