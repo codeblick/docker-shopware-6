@@ -101,13 +101,16 @@ ENV NODE_VERSION 16.19.1
 # install nvm
 RUN mkdir $NVM_DIR \
     && curl https://raw.githubusercontent.com/creationix/nvm/v0.39.3/install.sh | bash \
-    && chmod +x $NVM_DIR/nvm.sh
-
-# install node and npm    \
-RUN $NVM_DIR/nvm.sh \
+    && chmod +x $NVM_DIR/nvm.sh \
+    && . $NVM_DIR/nvm.sh \
     && nvm install $NODE_VERSION \
     && nvm alias default $NODE_VERSION \
     && nvm use default
+
+RUN echo "export NVM_DIR=\"$NVM_DIR\"" >> ~/.bashrc \
+    && echo "[ -s \"$NVM_DIR/nvm.sh\" ] && . \"$NVM_DIR/nvm.sh\"  # This loads nvm" >> ~/.bashrc \
+    && echo "[ -s \"$NVM_DIR/bash_completion\" ] && . \"$NVM_DIR/bash_completion\"  # This loads nvm bash_completion" >> ~/.bashrc \
+    && . ~/.bashrc
 
 # add node and npm to path so the commands are available
 ENV NODE_PATH $NVM_DIR/versions/node/v$NODE_VERSION/lib/node_modules

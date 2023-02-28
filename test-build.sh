@@ -1,0 +1,1 @@
+docker build -t cbk-php:1 --build-arg PHP_VERSION=8.0 .
