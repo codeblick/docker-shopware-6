@@ -85,6 +85,15 @@ RUN a2enmod expires
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
+RUN curl -s -o /usr/local/bin/composer https://getcomposer.org/download/2.4.0/composer.phar && \
+    chmod +x /usr/local/bin/composer
+
+RUN chown www-data:www-data /var/www; \
+    usermod --non-unique --uid 1000 www-data; \
+    groupmod --non-unique --gid 1000 www-data
+
+USER www-data
+
 # nvm environment variables
 ENV NVM_DIR /var/www/.nvm
 ENV NODE_VERSION 16.19.1
@@ -103,16 +112,3 @@ RUN $NVM_DIR/nvm.sh \
 # add node and npm to path so the commands are available
 ENV NODE_PATH $NVM_DIR/versions/node/v$NODE_VERSION/lib/node_modules
 ENV PATH      $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
-
-# confirm installation
-RUN node -v
-RUN npm -v
-
-RUN curl -s -o /usr/local/bin/composer https://getcomposer.org/download/2.4.0/composer.phar && \
-    chmod +x /usr/local/bin/composer
-
-RUN chown www-data:www-data /var/www; \
-    usermod --non-unique --uid 1000 www-data; \
-    groupmod --non-unique --gid 1000 www-data
-
-USER www-data
