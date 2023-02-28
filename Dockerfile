@@ -86,7 +86,7 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
 # nvm environment variables
-ENV NVM_DIR $HOME/.nvm
+ENV NVM_DIR /var/www/.nvm
 ENV NODE_VERSION 16.19.1
 
 # install nvm
@@ -95,7 +95,7 @@ RUN mkdir $NVM_DIR \
     && chmod +x $NVM_DIR/nvm.sh
 
 # install node and npm    \
-RUN . $NVM_DIR/nvm.sh \
+RUN $NVM_DIR/nvm.sh \
     && nvm install $NODE_VERSION \
     && nvm alias default $NODE_VERSION \
     && nvm use default
