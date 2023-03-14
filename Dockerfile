@@ -51,7 +51,8 @@ RUN apt-get install -y \
     libxslt1-dev \
     g++ \
     wget \
-    jq
+    jq \
+    git
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg
 RUN docker-php-ext-configure intl
 RUN docker-php-ext-install \
