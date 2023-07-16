@@ -88,7 +88,7 @@ RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
     
 RUN if [ "$PHP_VERSION" = "8.2" ] ; then curl -sL https://deb.nodesource.com/setup_18.x | bash; else curl -sL https://deb.nodesource.com/setup_16.x | bash; fi
 RUN apt-get install -y \
-    nodejs
+    nodejs npm
     
 RUN curl -s -o /usr/local/bin/composer https://getcomposer.org/download/2.5.8/composer.phar && \
     chmod +x /usr/local/bin/composer
