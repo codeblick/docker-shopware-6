@@ -87,6 +87,8 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
     
 ENV NVM_DIR /usr/local/nvm
+RUN mkdir -p $NVM_DIR
+
 ARG NODE_VERSION
 RUN curl https://raw.githubusercontent.com/creationix/nvm/v0.39.3/install.sh | bash \
     && . $NVM_DIR/nvm.sh \
