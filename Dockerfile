@@ -88,7 +88,7 @@ RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
     
 ARG NODE_VERSION
 RUN curl -sL https://deb.nodesource.com/setup_${NODE_VERSION}.x | bash && \
-    apt-get install -y nodejs npm
+    apt-get install -y nodejs
     
 RUN curl -s -o /usr/local/bin/composer https://getcomposer.org/download/2.5.8/composer.phar && \
     chmod +x /usr/local/bin/composer
