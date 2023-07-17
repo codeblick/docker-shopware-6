@@ -1,5 +1,4 @@
 ARG PHP_VERSION
-ARG NODE_VERSION
 
 FROM php:${PHP_VERSION}-apache
 
@@ -87,6 +86,7 @@ RUN a2enmod expires
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
     
+ARG NODE_VERSION
 RUN curl -sL https://deb.nodesource.com/setup_${NODE_VERSION}.x | bash && \
     apt-get install -y nodejs npm
     
