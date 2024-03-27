@@ -22,7 +22,7 @@ jobs:
       - run: docker build -q -t codeblick/shopware-6:php-8.3-xdebug --build-arg PHP_VERSION=8.3 --build-arg NODE_VERSION=20.12.0 --build-arg WITH_XDEBUG=1 .
       - run: docker push codeblick/shopware-6:php-8.3-xdebug
 
-      - run: docker build -q -t codeblick/shopware-6:php-8.2-xdebug --build-arg PHP_VERSION=8.2 --build-arg NODE_VERSION=18.20.2 --build-arg WITH_XDEBUG=1 .
+      - run: docker build -q -t codeblick/shopware-6:php-8.2-xdebug --build-arg PHP_VERSION=8.2 --build-arg NODE_VERSION=18.20.0 --build-arg WITH_XDEBUG=1 .
       - run: docker push codeblick/shopware-6:php-8.2-xdebug
 
       - run: docker build -q -t codeblick/shopware-6:php-8.1-xdebug --build-arg PHP_VERSION=8.1 --build-arg NODE_VERSION=16.20.2 --build-arg WITH_XDEBUG=1 .
