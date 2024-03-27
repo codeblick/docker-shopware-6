@@ -90,7 +90,7 @@ ENV NVM_DIR /usr/local/nvm
 RUN mkdir -p $NVM_DIR
 
 ARG NODE_VERSION
-RUN curl https://raw.githubusercontent.com/creationix/nvm/v0.39.3/install.sh | bash \
+RUN curl https://raw.githubusercontent.com/creationix/nvm/v0.39.7/install.sh | bash \
     && . $NVM_DIR/nvm.sh \
     && nvm install $NODE_VERSION
 

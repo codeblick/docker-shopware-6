@@ -8,6 +8,8 @@
 - codeblick/shopware-6:php-8.1-xdebug
 - codeblick/shopware-6:php-8.2
 - codeblick/shopware-6:php-8.2-xdebug
+- codeblick/shopware-6:php-8.3
+- codeblick/shopware-6:php-8.3-xdebug
 
 # Environment variables (default)
 
