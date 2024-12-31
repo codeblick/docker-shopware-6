@@ -28,6 +28,9 @@ ENV PHP_XDEBUG_IDEKEY=VSCODE
 
 ENV COMPOSER_PROCESS_TIMEOUT=900
 
+ENV PHP_ZEND_MAX_ALLOWED_STACK_SIZE=1024
+ENV PHP_XDEBUG_MAX_NESTING_LEVEL=1024
+
 RUN apt-get update
 RUN apt-get install -y \
     # ext-gd
@@ -69,7 +72,9 @@ RUN docker-php-ext-install \
     xsl
 
 RUN pecl install apcu; \
-    docker-php-ext-enable apcu
+    docker-php-ext-enable apcu; \
+    pecl install excimer; \
+    docker-php-ext-enable excimer
 
 RUN mkdir -p /usr/src/php/ext/redis; \
     curl -fsSL https://pecl.php.net/get/redis --ipv4 | tar xvz -C "/usr/src/php/ext/redis" --strip 1; \
@@ -85,7 +90,7 @@ RUN a2enmod headers
 RUN a2enmod expires
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
-    
+
 ENV NVM_DIR /usr/local/nvm
 RUN mkdir -p $NVM_DIR
 
