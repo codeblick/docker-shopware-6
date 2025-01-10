@@ -74,7 +74,9 @@ RUN docker-php-ext-install \
 RUN pecl install apcu; \
     docker-php-ext-enable apcu; \
     pecl install excimer; \
-    docker-php-ext-enable excimer
+    docker-php-ext-enable excimer; \
+    pecl install zstd; \
+    docker-php-ext-enable zstd
 
 RUN mkdir -p /usr/src/php/ext/redis; \
     curl -fsSL https://pecl.php.net/get/redis --ipv4 | tar xvz -C "/usr/src/php/ext/redis" --strip 1; \
