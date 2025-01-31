@@ -43,3 +43,7 @@ workflows:
     jobs:
       - build:
           context: docker
+          filters:
+            branches:
+              only:
+                - main
