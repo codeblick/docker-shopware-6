@@ -9,7 +9,11 @@ RUN apt-get update && \
     apt-get install -y llvm-14-tools llvm-14-dev && \
     apt-get install -y \
     build-essential \
+    pkg-config \
     clang \
+    libmysqlclient-dev \
+    libjpeg-dev \
+    libfreetype-dev \
     libfreetype6-dev \
     libjpeg62-turbo-dev \
     libpng-dev \
@@ -23,7 +27,9 @@ RUN apt-get update && \
     wget \
     jq \
     git \
-    redis-tools
+    redis-tools \
+
+RUN update-alternatives --set cc /usr/bin/gcc
 
 
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg
