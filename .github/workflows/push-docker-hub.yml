@@ -11,30 +11,44 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build:
+  docker:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      - name: Set up Docker
+        uses: docker/setup-docker-action@v4
+        with:
+          daemon-config: |
+            {
+              "debug": true,
+              "features": {
+                "containerd-snapshotter": true
+              }
+            }
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USER }}
-          password: ${{ secrets.DOCKER_PASS }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          platforms: linux/amd64,linux/arm64
+          load: true
+          tags: user/app:latest
+
+      #- name: Set up Docker Buildx
+      #  uses: docker/setup-buildx-action@v3
 
       - name: Build and push PHP 8.4
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         env:
           BUILDX_LOG_LEVEL: debug
         with:
-          context: .
+          #context: .
           platforms: linux/amd64,linux/arm64
           push: true
           tags: codeblick/shopware-6:php-8.4
@@ -45,9 +59,9 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Build and push PHP 8.4 xdebug
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
-          context: .
+          #context: .
           platforms: linux/amd64,linux/arm64
           push: true
           tags: codeblick/shopware-6:php-8.4-xdebug
@@ -55,49 +69,59 @@ jobs:
             PHP_VERSION=8.4
             NODE_VERSION=20.12.0
             WITH_XDEBUG=1
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Build and push PHP 8.3
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
-          context: .
+          #context: .
           platforms: linux/amd64,linux/arm64
           push: true
           tags: codeblick/shopware-6:php-8.3
           build-args: |
             PHP_VERSION=8.3
             NODE_VERSION=20.12.0
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Build and push PHP 8.3 xdebug
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
-          context: .
+          #context: .
           platforms: linux/amd64,linux/arm64
           push: true
           tags: codeblick/shopware-6:php-8.3-xdebug
           build-args: |
             PHP_VERSION=8.3
             NODE_VERSION=20.12.0
-            WITH_XDEBUG=1name: Docker Build and Push
+            WITH_XDEBUG=1
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Build and push PHP 8.2
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
-          context: .
+          #context: .
           platforms: linux/amd64,linux/arm64
           push: true
           tags: codeblick/shopware-6:php-8.2
           build-args: |
             PHP_VERSION=8.2
             NODE_VERSION=18.20.0
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Build and push PHP 8.2 xdebug
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
-          context: .
+          #context: .
           platforms: linux/amd64,linux/arm64
           push: true
           tags: codeblick/shopware-6:php-8.2-xdebug
           build-args: |
             PHP_VERSION=8.2
             NODE_VERSION=18.20.0
-            WITH_XDEBUG=1          cache-to: type=gha,mode=max            WITH_XDEBUG=1
+            WITH_XDEBUG=1
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
