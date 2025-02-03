@@ -31,6 +31,8 @@ jobs:
 
       - name: Build and push PHP 8.4
         uses: docker/build-push-action@v5
+        env:
+          BUILDX_LOG_LEVEL: debug
         with:
           context: .
           platforms: linux/amd64,linux/arm64
@@ -39,6 +41,8 @@ jobs:
           build-args: |
             PHP_VERSION=8.4
             NODE_VERSION=20.12.0
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Build and push PHP 8.4 xdebug
         uses: docker/build-push-action@v5
@@ -96,4 +100,4 @@ jobs:
           build-args: |
             PHP_VERSION=8.2
             NODE_VERSION=18.20.0
-            WITH_XDEBUG=1
+            WITH_XDEBUG=1          cache-to: type=gha,mode=max            WITH_XDEBUG=1
