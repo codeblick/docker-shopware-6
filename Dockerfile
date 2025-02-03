@@ -69,14 +69,9 @@ RUN docker-php-ext-install \
     pdo \
     pdo_mysql \
     iconv \
-    mbstring
-
-RUN docker-php-ext-install -vvv \
-    xml \
+    mbstring \
     soap \
-    xsl
-
-RUN docker-php-ext-install \
+    xsl \
     gd \
     zip \
     intl \
