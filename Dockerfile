@@ -52,10 +52,11 @@ RUN apt-get install -y \
     libicu-dev \
     # xsl
     libxslt1-dev \
+    libssl-dev \
     g++ \
     wget \
     jq \
-    git\
+    git \
     redis-tools
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg
 RUN docker-php-ext-configure intl
