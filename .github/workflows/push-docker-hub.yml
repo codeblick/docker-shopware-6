@@ -11,8 +11,8 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  DOCKERHUB_REPO: docker-user/codeblick/shopware-6
-  GHCR_REPO: ghcr.io/gh-user/codeblick/shopware-6
+  DOCKERHUB_REPO: codeblick/shopware-6
+  GHCR_REPO: ghcr.io/codeblick/shopware-6
 
 jobs:
   build:
