@@ -32,7 +32,7 @@ RUN apt-get update && \
 #RUN update-alternatives --set cc /usr/bin/gcc
 
 
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg
+RUN docker-php-ext-configure gd --with-jpeg
 RUN docker-php-ext-configure intl
 RUN docker-php-ext-install \
     pdo \
