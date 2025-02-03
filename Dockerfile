@@ -3,6 +3,7 @@ FROM php:${PHP_VERSION}-apache AS builder
 
 RUN apt-get update && \
     apt-get install -f -y && \
+    apt-get install -y python3-pkg-resources && \
     apt-get install -y python3-pygments && \
     apt-get install -y \
     build-essential \
