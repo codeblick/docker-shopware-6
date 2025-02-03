@@ -29,7 +29,7 @@ RUN apt-get update && \
     git \
     redis-tools \
 
-RUN update-alternatives --set cc /usr/bin/gcc
+#RUN update-alternatives --set cc /usr/bin/gcc
 
 
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg
