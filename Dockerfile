@@ -57,8 +57,9 @@ RUN apt-get install -y \
     wget \
     jq \
     git \
-    redis-tools \
-    && rm -rf /var/lib/apt/lists/* \
+    redis-tools
+
+RUN rm -rf /var/lib/apt/lists/*
 
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg
 RUN docker-php-ext-configure intl
