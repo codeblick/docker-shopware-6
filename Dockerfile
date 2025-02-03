@@ -79,9 +79,11 @@ RUN docker-php-ext-install \
     soap \
     xsl \
     gd \
-    zip \
     intl \
     ftp
+
+ENV CFLAGS="-fPIC"
+RUN docker-php-ext-install zip
 
 RUN docker-php-ext-configure opcache --disable-opcache-jit
 RUN docker-php-ext-install opcache
