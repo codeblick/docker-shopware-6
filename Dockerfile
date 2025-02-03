@@ -32,6 +32,9 @@ ENV PHP_ZEND_MAX_ALLOWED_STACK_SIZE=0
 ENV PHP_XDEBUG_MAX_NESTING_LEVEL=256
 
 RUN apt-get update
+RUN apt-get install -y clang
+ENV CC=clang
+
 RUN apt-get install -y \
     # ext-gd
     libfreetype6-dev \
