@@ -3,8 +3,10 @@ FROM php:${PHP_VERSION}-apache AS builder
 
 RUN apt-get update && \
     apt-get install -f -y && \
+    apt-get install -y gcc-12 && \
     apt-get install -y python3-pkg-resources && \
     apt-get install -y python3-pygments && \
+    apt-get install -y llvm-14-tools llvm-14-dev && \
     apt-get install -y \
     build-essential \
     clang \
