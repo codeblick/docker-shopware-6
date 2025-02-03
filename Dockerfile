@@ -1,7 +1,10 @@
 ARG PHP_VERSION=8.3
 FROM php:${PHP_VERSION}-apache AS builder
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && \
+    apt-get install -f -y && \
+    apt-get install -y python3-pygments && \
+    apt-get install -y \
     build-essential \
     clang \
     libfreetype6-dev \
@@ -18,6 +21,7 @@ RUN apt-get update && apt-get install -y \
     jq \
     git \
     redis-tools
+
 
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg
 RUN docker-php-ext-configure intl
