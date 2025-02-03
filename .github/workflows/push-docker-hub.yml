@@ -10,118 +10,147 @@ concurrency:
   group: ${{ github.workflow }}
   cancel-in-progress: false
 
+env:
+  DOCKERHUB_REPO: docker-user/codeblick/shopware-6
+  GHCR_REPO: ghcr.io/gh-user/codeblick/shopware-6
+
 jobs:
-  docker:
+  build:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - linux/amd64
+          - linux/arm64
+        php_version:
+          - "8.2"
+          - "8.3"
+          - "8.4"
+        include:
+          - php_version: "8.2"
+            node_version: "18.20.0"
+          - php_version: "8.3"
+            node_version: "20.12.0"
+          - php_version: "8.4"
+            node_version: "20.12.0"
+        with_xdebug:
+          - "0"
+          - "1"
     steps:
-      - name: Set up Docker
-        uses: docker/setup-docker-action@v4
+      - name: Prepare
+        run: |
+          platform=${{ matrix.platform }}
+          php_version=${{ matrix.php_version }}
+          with_xdebug=${{ matrix.with_xdebug }}
+          echo "PLATFORM_PAIR=${platform//\//-}" >> $GITHUB_ENV
+          echo "PHP_VERSION=${php_version}" >> $GITHUB_ENV
+          echo "WITH_XDEBUG=${with_xdebug}" >> $GITHUB_ENV
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
         with:
-          daemon-config: |
-            {
-              "debug": true,
-              "features": {
-                "containerd-snapshotter": true
-              }
-            }
+          images: |
+            ${{ env.DOCKERHUB_REPO }}
+            ${{ env.GHCR_REPO }}
+          tags: |
+            type=raw,value=${{ matrix.php_version }}-${{ matrix.with_xdebug == '1' && 'xdebug' || 'base' }}
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PASS }}
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
-      - name: Build and push
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push by digest
+        id: build
         uses: docker/build-push-action@v6
         with:
-          platforms: linux/amd64,linux/arm64
-          load: true
-          tags: user/app:latest
-
-      #- name: Set up Docker Buildx
-      #  uses: docker/setup-buildx-action@v3
-
-      - name: Build and push PHP 8.4
-        uses: docker/build-push-action@v6
-        env:
-          BUILDX_LOG_LEVEL: debug
-        with:
-          #context: .
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: codeblick/shopware-6:php-8.4
+          platforms: ${{ matrix.platform }}
+          labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            PHP_VERSION=8.4
-            NODE_VERSION=20.12.0
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+            PHP_VERSION=${{ matrix.php_version }}
+            WITH_XDEBUG=${{ matrix.with_xdebug }}
+          outputs: type=image,"name=${{ env.DOCKERHUB_REPO }},${{ env.GHCR_REPO }}",push-by-digest=true,name-canonical=true,push=true
 
-      - name: Build and push PHP 8.4 xdebug
-        uses: docker/build-push-action@v6
-        with:
-          #context: .
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: codeblick/shopware-6:php-8.4-xdebug
-          build-args: |
-            PHP_VERSION=8.4
-            NODE_VERSION=20.12.0
-            WITH_XDEBUG=1
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+      - name: Export digest
+        run: |
+          mkdir -p ${{ runner.temp }}/digests
+          digest="${{ steps.build.outputs.digest }}"
+          touch "${{ runner.temp }}/digests/${digest#sha256:}"
 
-      - name: Build and push PHP 8.3
-        uses: docker/build-push-action@v6
+      - name: Upload digest
+        uses: actions/upload-artifact@v4
         with:
-          #context: .
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: codeblick/shopware-6:php-8.3
-          build-args: |
-            PHP_VERSION=8.3
-            NODE_VERSION=20.12.0
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          name: digests-${{ env.PLATFORM_PAIR }}-php${{ matrix.php_version }}-${{ matrix.with_xdebug == '1' && 'xdebug' || 'base' }}
+          path: ${{ runner.temp }}/digests/*
+          if-no-files-found: error
+          retention-days: 1
 
-      - name: Build and push PHP 8.3 xdebug
-        uses: docker/build-push-action@v6
+  merge:
+    runs-on: ubuntu-latest
+    needs:
+      - build
+    steps:
+      - name: Download digests
+        uses: actions/download-artifact@v4
         with:
-          #context: .
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: codeblick/shopware-6:php-8.3-xdebug
-          build-args: |
-            PHP_VERSION=8.3
-            NODE_VERSION=20.12.0
-            WITH_XDEBUG=1
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          path: ${{ runner.temp }}/digests
+          pattern: digests-*
+          merge-multiple: true
 
-      - name: Build and push PHP 8.2
-        uses: docker/build-push-action@v6
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
         with:
-          #context: .
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: codeblick/shopware-6:php-8.2
-          build-args: |
-            PHP_VERSION=8.2
-            NODE_VERSION=18.20.0
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and push PHP 8.2 xdebug
-        uses: docker/build-push-action@v6
+      - name: Login to GHCR
+        uses: docker/login-action@v3
         with:
-          #context: .
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: codeblick/shopware-6:php-8.2-xdebug
-          build-args: |
-            PHP_VERSION=8.2
-            NODE_VERSION=18.20.0
-            WITH_XDEBUG=1
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            ${{ env.DOCKERHUB_REPO }}
+            ${{ env.GHCR_REPO }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+
+      - name: Create manifest list and push
+        working-directory: ${{ runner.temp }}/digests
+        run: |
+          docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
+            $(printf '${{ env.DOCKERHUB_REPO }}@sha256:%s ' *)
+          docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
+            $(printf '${{ env.GHCR_REPO }}@sha256:%s ' *)
+
+      - name: Inspect image
+        run: |
+          docker buildx imagetools inspect ${{ env.DOCKERHUB_REPO }}:${{ steps.meta.outputs.version }}
+          docker buildx imagetools inspect ${{ env.GHCR_REPO }}:${{ steps.meta.outputs.version }}
