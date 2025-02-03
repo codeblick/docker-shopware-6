@@ -1,4 +1,4 @@
-ARG PHP_VERSION
+ARG PHP_VERSION=8.3
 
 FROM php:${PHP_VERSION}-apache
 
@@ -70,7 +70,8 @@ RUN docker-php-ext-install \
     intl \
     opcache \
     soap \
-    xsl
+    xsl \
+    ftp
 
 RUN pecl install apcu; \
     docker-php-ext-enable apcu; \
@@ -97,10 +98,12 @@ RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
 ENV NVM_DIR /usr/local/nvm
 RUN mkdir -p $NVM_DIR
 
-ARG NODE_VERSION
-RUN curl https://raw.githubusercontent.com/creationix/nvm/v0.39.7/install.sh | bash \
-    && . $NVM_DIR/nvm.sh \
-    && nvm install $NODE_VERSION
+ARG NODE_VERSION=20.12.0
+RUN bash -c 'curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.39.7/install.sh | bash' \
+    && export NVM_DIR="/usr/local/nvm" \
+    && [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" \
+    && nvm install $NODE_VERSION \
+    && node --version
 
 ENV PATH $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
 
