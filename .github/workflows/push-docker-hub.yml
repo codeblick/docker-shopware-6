@@ -31,6 +31,8 @@ jobs:
 
       - name: Build and push PHP 8.4
         uses: docker/build-push-action@v5
+        env:
+          BUILDX_LOG_LEVEL: debug
         with:
           context: .
           platforms: linux/amd64,linux/arm64
