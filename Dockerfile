@@ -36,6 +36,11 @@ RUN apt-get install -y clang
 ENV CC=clang
 
 RUN apt-get install -y \
+    build-essential \
+    libtool \
+    autoconf \
+    automake \
+    clang \
     # ext-gd
     libfreetype6-dev \
     libjpeg62-turbo-dev \
@@ -76,8 +81,10 @@ RUN docker-php-ext-install \
     gd \
     zip \
     intl \
-    opcache \
     ftp
+
+RUN docker-php-ext-configure opcache --disable-opcache-jit
+RUN docker-php-ext-install opcache
 
 RUN pecl install apcu; \
     docker-php-ext-enable apcu; \
