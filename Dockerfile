@@ -69,7 +69,7 @@ RUN apt-get install -y \
 RUN rm -rf /var/lib/apt/lists/*
 
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg
-RUN docker-php-ext-configure intl --with-icu-dir=/usr #--host=arm-linux-gnueabihf
+RUN docker-php-ext-configure intl #--host=arm-linux-gnueabihf
 RUN docker-php-ext-install \
     pdo \
     pdo_mysql \
