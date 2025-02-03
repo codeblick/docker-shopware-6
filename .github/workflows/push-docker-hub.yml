@@ -85,7 +85,11 @@ jobs:
           build-args: |
             PHP_VERSION=${{ matrix.php_version }}
             WITH_XDEBUG=${{ matrix.with_xdebug }}
-          outputs: type=image,"name=${{ env.DOCKERHUB_REPO }},${{ env.GHCR_REPO }}",push-by-digest=true,name-canonical=true,push=true
+          #outputs: type=image,"name=${{ env.DOCKERHUB_REPO }},${{ env.GHCR_REPO }}",push-by-digest=true,name-canonical=true,push=true
+          push: true
+          tags: |
+            ${{ env.DOCKERHUB_REPO }}:${{ matrix.php_version }}-${{ matrix.with_xdebug == '1' && 'xdebug' || 'base' }}
+            ${{ env.GHCR_REPO }}:${{ matrix.php_version }}-${{ matrix.with_xdebug == '1' && 'xdebug' || 'base' }}
 
       - name: Export digest
         run: |
