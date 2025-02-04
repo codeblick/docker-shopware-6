@@ -23,6 +23,8 @@ jobs:
         type: string
       with_xdebug:
         type: string
+      node_version:
+        type: string
     machine: true
     steps:
       - checkout
