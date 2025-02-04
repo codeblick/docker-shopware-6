@@ -7,8 +7,6 @@ executors:
     working_directory: ~/repo  # You can specify where to run commands
     environment:
       DOCKER_HOST: unix:///var/run/docker.sock  # Ensures Docker commands communicate with the host Docker daemon
-    mounts:
-      - "/var/run/docker.sock:/var/run/docker.sock"  # Mount the Docker socket
 
 jobs:
   build_php:
@@ -16,6 +14,9 @@ jobs:
       - image: circleci/python:3.8
     steps:
       - checkout
+      - setup_remote_docker:
+          version: 20.10.7  # Optional, specify Docker version if needed
+          docker_layer_caching: true  # Enables Docker layer caching for faster builds
       - run:
           name: Build Docker Image
           command: |
