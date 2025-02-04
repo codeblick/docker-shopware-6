@@ -3,7 +3,7 @@ version: 2.1
 executors:
   docker-executor:
     docker:
-      - image: circleci/python:3.8  # Add the base image for your pipeline
+      - image: circleci/python:3.8  # Choose an appropriate base image
 
 jobs:
   build_php:
@@ -70,10 +70,18 @@ workflows:
   version: 2
   build_and_push:
     jobs:
-      - build_php_8_4
-      - build_php_8_3
-      - build_php_8_2
-    filters:
-        branches:
-          only:
-            - main
+      - build_php_8_4:
+          filters:
+            branches:
+              only:
+                - main
+      - build_php_8_3:
+          filters:
+            branches:
+              only:
+                - main
+      - build_php_8_2:
+          filters:
+            branches:
+              only:
+                - main
