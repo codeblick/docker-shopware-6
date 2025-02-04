@@ -2,18 +2,9 @@ ARG PHP_VERSION=8.3
 FROM php:${PHP_VERSION}-apache AS builder
 
 RUN apt-get update && \
-    apt-get install -f -y && \
-    apt-get install -y gcc-12 && \
-    apt-get install -y python3-pkg-resources && \
-    apt-get install -y python3-pygments && \
-    apt-get install -y llvm-14-tools llvm-14-dev && \
     apt-get install -y \
     build-essential \
     pkg-config \
-    clang \
-    libmysqlclient-dev \
-    libjpeg-dev \
-    libfreetype-dev \
     libfreetype6-dev \
     libjpeg62-turbo-dev \
     libpng-dev \
@@ -27,10 +18,7 @@ RUN apt-get update && \
     wget \
     jq \
     git \
-    redis-tools \
-
-#RUN update-alternatives --set cc /usr/bin/gcc
-
+    redis-tools
 
 RUN docker-php-ext-configure gd
 RUN docker-php-ext-configure intl
