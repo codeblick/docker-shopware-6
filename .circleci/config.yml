@@ -1,98 +1,67 @@
 version: 2.1
 
-executors:
-  docker-executor:
-    docker:
-      - image: circleci/python:3.8  # Choose an appropriate base image with Docker support
-    working_directory: ~/repo  # You can specify where to run commands
-    environment:
-      DOCKER_HOST: unix:///var/run/docker.sock  # Ensures Docker commands communicate with the host Docker daemon
-
 jobs:
-  build_php:
+  build:
     docker:
-      - image: circleci/python:3.8
+      - image: cimg/base:2024.02
+    parameters:
+      php_version:
+        type: string
+      node_version:
+        type: string
+      with_xdebug:
+        type: string
     steps:
       - checkout
-      - setup_remote_docker:
-          version: 20.10.7  # Optional, specify Docker version if needed
-          docker_layer_caching: true  # Enables Docker layer caching for faster builds
-      - run:
-          name: Build Docker Image
-          command: |
-            # PHP, Node versions, and Xdebug flag mappings
-            PHP_VERSION=$1
-            NODE_VERSION=$2
-            XDEBUG_FLAG=$3
 
-            # Image Tag: without Xdebug or with Xdebug
-            if [ "$XDEBUG_FLAG" -eq 1 ]; then
-              IMAGE_TAG="codeblick/shopware-6:php-${PHP_VERSION}-xdebug"
-            else
-              IMAGE_TAG="codeblick/shopware-6:php-${PHP_VERSION}"
-            fi
+      - run: echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
 
-            # Docker login and build
-            echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
-            docker buildx create --use
-            docker buildx build -q --platform linux/amd64,linux/arm64 -t $IMAGE_TAG \
-              --build-arg PHP_VERSION=$PHP_VERSION \
-              --build-arg NODE_VERSION=$NODE_VERSION \
-              --build-arg WITH_XDEBUG=$XDEBUG_FLAG \
-              --push .
+      - run: docker buildx create --use
 
-  build_php_8_4:
-    executor: docker-executor
-    steps:
-      - run:
-          name: Build PHP 8.4 Without Xdebug
-          command: |
-            docker run --rm my-image-build-script 8.4 20.12.0 0
-      - run:
-          name: Build PHP 8.4 With Xdebug
-          command: |
-            docker run --rm my-image-build-script 8.4 20.12.0 1
-
-  build_php_8_3:
-    executor: docker-executor
-    steps:
-      - run:
-          name: Build PHP 8.3 Without Xdebug
-          command: |
-            docker run --rm my-image-build-script 8.3 20.12.0 0
-      - run:
-          name: Build PHP 8.3 With Xdebug
-          command: |
-            docker run --rm my-image-build-script 8.3 20.12.0 1
-
-  build_php_8_2:
-    executor: docker-executor
-    steps:
-      - run:
-          name: Build PHP 8.2 Without Xdebug
-          command: |
-            docker run --rm my-image-build-script 8.2 18.20.0 0
-      - run:
-          name: Build PHP 8.2 With Xdebug
-          command: |
-            docker run --rm my-image-build-script 8.2 18.20.0 1
+      - run: |
+          TAG="php-$<< parameters.php_version >>$([ $<< parameters.with_xdebug >> == '1' ] && echo '-xdebug' || echo '')"
+          docker buildx build -q \
+            --platform linux/amd64,linux/arm64 \
+            -t codeblick/shopware-6:$TAG \
+            --build-arg PHP_VERSION=$<< parameters.php_version >> \
+            --build-arg NODE_VERSION=$<< parameters.node_version >> \
+            --build-arg WITH_XDEBUG=$<< parameters.with_xdebug >> \
+            --push .
 
 workflows:
-  version: 2
   build_and_push:
     jobs:
-      - build_php_8_4:
-          filters:
-            branches:
-              only:
-                - main
-      - build_php_8_3:
-          filters:
-            branches:
-              only:
-                - main
-      - build_php_8_2:
-          filters:
-            branches:
-              only:
-                - main
+      - build:
+          name: build_php_8_4
+          php_version: "8.4"
+          node_version: "20.12.0"
+          with_xdebug: "0"
+      - build:
+          name: build_php_8_3
+          php_version: "8.3"
+          node_version: "20.12.0"
+          with_xdebug: "0"
+      - build:
+          name: build_php_8_2
+          php_version: "8.2"
+          node_version: "18.20.0"
+          with_xdebug: "0"
+      - build:
+          name: build_php_8_4_xdebug
+          php_version: "8.4"
+          node_version: "20.12.0"
+          with_xdebug: "1"
+      - build:
+          name: build_php_8_3_xdebug
+          php_version: "8.3"
+          node_version: "20.12.0"
+          with_xdebug: "1"
+      - build:
+          name: build_php_8_2_xdebug
+          php_version: "8.2"
+          node_version: "18.20.0"
+          with_xdebug: "1"
+    filters:
+      branches:
+        only:
+          - main
