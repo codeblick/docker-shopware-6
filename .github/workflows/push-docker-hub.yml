@@ -17,6 +17,9 @@ env:
 jobs:
   build:
     runs-on: macos-latest
+    defaults:
+      run:
+        shell: bash
     strategy:
       fail-fast: false
       matrix:
@@ -38,6 +41,17 @@ jobs:
           - "0"
           - "1"
     steps:
+      - name: Set up Rosetta for Intel emulation
+        run: |
+          # Ensure Rosetta is installed
+          softwareupdate --install-rosetta --agree-to-license
+          # Force Intel emulation for the rest of the job
+          echo "ARCH=$(arch)" >> $GITHUB_ENV
+          if [ "$(arch)" = "arm64" ]; then
+            echo "Running in Intel emulation mode"
+            arch -x86_64 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+            echo
+
       - name: Prepare
         run: |
           platform=${{ matrix.platform }}
