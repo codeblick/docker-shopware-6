@@ -16,7 +16,7 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     strategy:
       fail-fast: false
       matrix:
@@ -80,6 +80,7 @@ jobs:
         id: build
         uses: docker/build-push-action@v6
         with:
+          #context: .
           platforms: ${{ matrix.platform }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
@@ -91,7 +92,7 @@ jobs:
             ${{ env.GHCR_REPO }}:php-${{ matrix.php_version }}${{ matrix.with_xdebug == '1' && '-xdebug' || '' }}
 
   merge:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     needs:
       - build
     steps:
