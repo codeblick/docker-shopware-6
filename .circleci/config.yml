@@ -130,6 +130,14 @@ workflows:
                 - php_version: "8.4"
                   node_version: "20.12.0"
           parallelism: 12
+          filters:
+            branches:
+              only:
+                - main
       - merge:
           requires:
             - build
+          filters:
+            branches:
+              only:
+                - main
