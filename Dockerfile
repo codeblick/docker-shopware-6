@@ -20,7 +20,7 @@ RUN apt-get update && \
     git \
     redis-tools
 
-RUN docker-php-ext-configure gd
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg
 RUN docker-php-ext-configure intl
 RUN docker-php-ext-install \
     pdo \
