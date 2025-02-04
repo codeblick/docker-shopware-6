@@ -1,48 +1,27 @@
 version: 2.1
 
-executors:
-  linux:
-    machine: true
-  macos:
-    macos:
-      xcode: 16.2.0
-
 jobs:
+  setup:
+    machine: true
+    steps:
+      - checkout
+      - run: echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
+      - run: docker buildx create --use
+
   build:
+    machine: true
     parameters:
-      os:
-        type: executor
-      platform:
-        type: string
       php_version:
         type: string
       node_version:
         type: string
       with_xdebug:
         type: string
-    executor: << parameters.os >>
     steps:
       - checkout
-
-      - run:
-          name: Install Docker
-          command: |
-            if [ "<< parameters.os >>" == "macos" ]; then
-              brew install docker
-            else
-              sudo apt-get update
-              sudo apt-get install -y docker.io
-              sudo systemctl start docker
-              sudo systemctl enable docker
-            fi
-
-      - run: echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
-      - run: docker buildx create --use
-
       - run: |
           TAG="php-$<< parameters.php_version >>$([ $<< parameters.with_xdebug >> == '1' ] && echo '-xdebug' || echo '')"
-          docker buildx build -q \
-            --platform $<< parameters.platform >> \
+          docker buildx build --platform linux/amd64,linux/arm64 \
             -t codeblick/shopware-6:$TAG \
             --build-arg PHP_VERSION=$<< parameters.php_version >> \
             --build-arg NODE_VERSION=$<< parameters.node_version >> \
@@ -50,41 +29,72 @@ jobs:
             --push .
 
 workflows:
+  version: 2
   build_and_push:
     jobs:
+      - setup
       - build:
-          matrix:
-            parameters:
-              os: [linux, macos]
-              platform: ["linux/amd64", "linux/arm64"]
-              php_version: ["8.2", "8.3", "8.4"]
-              with_xdebug: ["0", "1"]
-              node_version: ["18.20.0", "20.12.0"]
-            include:
-              - os: linux
-                platform: "linux/amd64"
-                php_version: "8.2"
-                node_version: "18.20.0"
-              - os: linux
-                platform: "linux/amd64"
-                php_version: "8.3"
-                node_version: "20.12.0"
-              - os: linux
-                platform: "linux/amd64"
-                php_version: "8.4"
-                node_version: "20.12.0"
-              - os: macos
-                platform: "linux/arm64"
-                php_version: "8.2"
-                node_version: "18.20.0"
-              - os: macos
-                platform: "linux/arm64"
-                php_version: "8.3"
-                node_version: "20.12.0"
-              - os: macos
-                platform: "linux/arm64"
-                php_version: "8.4"
-                node_version: "20.12.0"
+          name: build_php_84
+          php_version: "8.4"
+          node_version: "20.12.0"
+          with_xdebug: "0"
+          requires:
+            - setup
+          filters:
+            branches:
+              only:
+                - main
+      - build:
+          name: build_php_84_xdebug
+          php_version: "8.4"
+          node_version: "20.12.0"
+          with_xdebug: "1"
+          requires:
+            - setup
+          filters:
+            branches:
+              only:
+                - main
+      - build:
+          name: build_php_83
+          php_version: "8.3"
+          node_version: "20.12.0"
+          with_xdebug: "0"
+          requires:
+            - setup
+          filters:
+            branches:
+              only:
+                - main
+      - build:
+          name: build_php_83_xdebug
+          php_version: "8.3"
+          node_version: "20.12.0"
+          with_xdebug: "1"
+          requires:
+            - setup
+          filters:
+            branches:
+              only:
+                - main
+      - build:
+          name: build_php_82
+          php_version: "8.2"
+          node_version: "18.20.0"
+          with_xdebug: "0"
+          requires:
+            - setup
+          filters:
+            branches:
+              only:
+                - main
+      - build:
+          name: build_php_82_xdebug
+          php_version: "8.2"
+          node_version: "18.20.0"
+          with_xdebug: "1"
+          requires:
+            - setup
           filters:
             branches:
               only:
