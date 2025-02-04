@@ -3,12 +3,17 @@ version: 2.1
 executors:
   docker-executor:
     docker:
-      - image: circleci/python:3.8  # Use an appropriate base image with Docker support
+      - image: circleci/python:3.8  # Choose an appropriate base image with Docker support
+    working_directory: ~/repo  # You can specify where to run commands
+    environment:
+      DOCKER_HOST: unix:///var/run/docker.sock  # Ensures Docker commands communicate with the host Docker daemon
+    mounts:
+      - "/var/run/docker.sock:/var/run/docker.sock"  # Mount the Docker socket
 
 jobs:
   build_php:
     docker:
-      - image: circleci/python:3.8  # Choose an appropriate base image
+      - image: circleci/python:3.8
     steps:
       - checkout
       - run:
@@ -18,7 +23,7 @@ jobs:
             PHP_VERSION=$1
             NODE_VERSION=$2
             XDEBUG_FLAG=$3
-            
+
             # Image Tag: without Xdebug or with Xdebug
             if [ "$XDEBUG_FLAG" -eq 1 ]; then
               IMAGE_TAG="codeblick/shopware-6:php-${PHP_VERSION}-xdebug"
