@@ -36,32 +36,53 @@ workflows:
           php_version: "8.4"
           node_version: "20.12.0"
           with_xdebug: "0"
+          filters:
+            branches:
+              only:
+                - main
       - build:
           name: build_php_8_3
           php_version: "8.3"
           node_version: "20.12.0"
           with_xdebug: "0"
+          filters:
+            branches:
+              only:
+                - main
       - build:
           name: build_php_8_2
           php_version: "8.2"
           node_version: "18.20.0"
           with_xdebug: "0"
+          filters:
+            branches:
+              only:
+                - main
       - build:
           name: build_php_8_4_xdebug
           php_version: "8.4"
           node_version: "20.12.0"
           with_xdebug: "1"
+          filters:
+            branches:
+              only:
+                - main
       - build:
           name: build_php_8_3_xdebug
           php_version: "8.3"
           node_version: "20.12.0"
           with_xdebug: "1"
+          filters:
+            branches:
+              only:
+                - main
       - build:
           name: build_php_8_2_xdebug
           php_version: "8.2"
           node_version: "18.20.0"
           with_xdebug: "1"
-    filters:
-      branches:
-        only:
-          - main
+          filters:
+            branches:
+              only:
+                - main
+
