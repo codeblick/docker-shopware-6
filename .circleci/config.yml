@@ -1,19 +1,20 @@
 version: 2.1
 
 executors:
-  linux: # a Linux VM running Ubuntu 20.04
+  linux:
     machine:
       image: ubuntu-latest
-  macos: # macOS executor for ARM images
+  macos:
     macos:
       xcode: 16.2.0
-    resource_class: m2pro.large
 
 jobs:
   build:
     parameters:
       os:
         type: executor
+      platform:
+        type: string
       php_version:
         type: string
       node_version:
@@ -24,14 +25,25 @@ jobs:
     steps:
       - checkout
 
+      - run:
+          name: Install Docker
+          command: |
+            if [ "<< parameters.os >>" == "macos" ]; then
+              brew install docker
+            else
+              sudo apt-get update
+              sudo apt-get install -y docker.io
+              sudo systemctl start docker
+              sudo systemctl enable docker
+            fi
+
       - run: echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
       - run: docker buildx create --use
 
       - run: |
           TAG="php-$<< parameters.php_version >>$([ $<< parameters.with_xdebug >> == '1' ] && echo '-xdebug' || echo '')"
-          PLATFORM=$([ "<< parameters.os >>" == "macos" ] && echo "linux/arm64" || echo "linux/amd64")
           docker buildx build -q \
-            --platform $PLATFORM \
+            --platform $<< parameters.platform >> \
             -t codeblick/shopware-6:$TAG \
             --build-arg PHP_VERSION=$<< parameters.php_version >> \
             --build-arg NODE_VERSION=$<< parameters.node_version >> \
@@ -45,9 +57,35 @@ workflows:
           matrix:
             parameters:
               os: [linux, macos]
+              platform: ["linux/amd64", "linux/arm64"]
               php_version: ["8.2", "8.3", "8.4"]
-              node_version: ["18.20.0", "20.12.0"]
               with_xdebug: ["0", "1"]
+              node_version: ["18.20.0", "20.12.0"]
+            include:
+              - os: linux
+                platform: "linux/amd64"
+                php_version: "8.2"
+                node_version: "18.20.0"
+              - os: linux
+                platform: "linux/amd64"
+                php_version: "8.3"
+                node_version: "20.12.0"
+              - os: linux
+                platform: "linux/amd64"
+                php_version: "8.4"
+                node_version: "20.12.0"
+              - os: macos
+                platform: "linux/arm64"
+                php_version: "8.2"
+                node_version: "18.20.0"
+              - os: macos
+                platform: "linux/arm64"
+                php_version: "8.3"
+                node_version: "20.12.0"
+              - os: macos
+                platform: "linux/arm64"
+                php_version: "8.4"
+                node_version: "20.12.0"
           filters:
             branches:
               only:
