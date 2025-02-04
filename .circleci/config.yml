@@ -29,6 +29,11 @@ jobs:
           command: |
             if [ "<< parameters.os >>" == "macos" ]; then
               brew install docker
+            else
+              sudo apt-get update
+              sudo apt-get install -y docker.io
+              sudo systemctl start docker
+              sudo systemctl enable docker
             fi
 
       - run: echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
