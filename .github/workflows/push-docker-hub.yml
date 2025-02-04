@@ -71,10 +71,10 @@ jobs:
           platforms: ${{ matrix.platform }}
           labels: ${{ steps.meta.outputs.labels }}
           outputs: type=image,"name=${{ env.DOCKERHUB_REPO }}",push-by-digest=true,name-canonical=true,push=true
-          build-args:
-            - PHP_VERSION=${{ matrix.php_version }}
-            - NODE_VERSION=${{ matrix.node_version }}
-            - WITH_XDEBUG=${{ matrix.with_xdebug }}
+          build-args: |
+            PHP_VERSION=${{ matrix.php_version }}
+            NODE_VERSION=${{ matrix.node_version }}
+            WITH_XDEBUG=${{ matrix.with_xdebug }}
 
       - name: Export digest
         run: |
