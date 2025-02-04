@@ -15,7 +15,7 @@ parameters:
     default: "18.20.0"
 
 jobs:
-  build:
+  build_and_push:
     parameters:
       platform:
         type: string
