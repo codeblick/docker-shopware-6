@@ -1,89 +1,53 @@
-version: 2
+version: 2.1
+
+executors:
+  linux: # a Linux VM running Ubuntu 20.04
+    machine:
+      image: ubuntu-latest
+  macos: # macOS executor for ARM images
+    macos:
+      xcode: 16.2.0
+    resource_class: m2pro.large
+
 jobs:
-  build_php_84:
-    machine: true
+  build:
+    parameters:
+      os:
+        type: executor
+      php_version:
+        type: string
+      node_version:
+        type: string
+      with_xdebug:
+        type: string
+    executor: << parameters.os >>
     steps:
       - checkout
-      - run: echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
-      - run: docker buildx create --use
-      - run: docker buildx build --platform linux/amd64,linux/arm64 -t codeblick/shopware-6:php-8.4 --build-arg PHP_VERSION=8.4 --build-arg NODE_VERSION=20.12.0 --push .
 
-  build_php_84_xdebug:
-    machine: true
-    steps:
-      - checkout
       - run: echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
       - run: docker buildx create --use
-      - run: docker buildx build --platform linux/amd64,linux/arm64 -t codeblick/shopware-6:php-8.4-xdebug --build-arg PHP_VERSION=8.4 --build-arg NODE_VERSION=20.12.0 --build-arg WITH_XDEBUG=1 --push .
 
-  build_php_83:
-    machine: true
-    steps:
-      - checkout
-      - run: echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
-      - run: docker buildx create --use
-      - run: docker buildx build --platform linux/amd64,linux/arm64 -t codeblick/shopware-6:php-8.3 --build-arg PHP_VERSION=8.3 --build-arg NODE_VERSION=20.12.0 --push .
-
-  build_php_83_xdebug:
-    machine: true
-    steps:
-      - checkout
-      - run: echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
-      - run: docker buildx create --use
-      - run: docker buildx build --platform linux/amd64,linux/arm64 -t codeblick/shopware-6:php-8.3-xdebug --build-arg PHP_VERSION=8.3 --build-arg NODE_VERSION=20.12.0 --build-arg WITH_XDEBUG=1 --push .
-
-  build_php_82:
-    machine: true
-    steps:
-      - checkout
-      - run: echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
-      - run: docker buildx create --use
-      - run: docker buildx build --platform linux/amd64,linux/arm64 -t codeblick/shopware-6:php-8.2 --build-arg PHP_VERSION=8.2 --build-arg NODE_VERSION=18.20.0 --push .
-
-  build_php_82_xdebug:
-    machine: true
-    steps:
-      - checkout
-      - run: echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
-      - run: docker buildx create --use
-      - run: docker buildx build --platform linux/amd64,linux/arm64 -t codeblick/shopware-6:php-8.2-xdebug --build-arg PHP_VERSION=8.2 --build-arg NODE_VERSION=18.20.0 --build-arg WITH_XDEBUG=1 --push .
+      - run: |
+          TAG="php-$<< parameters.php_version >>$([ $<< parameters.with_xdebug >> == '1' ] && echo '-xdebug' || echo '')"
+          PLATFORM=$([ "<< parameters.os >>" == "macos" ] && echo "linux/arm64" || echo "linux/amd64")
+          docker buildx build -q \
+            --platform $PLATFORM \
+            -t codeblick/shopware-6:$TAG \
+            --build-arg PHP_VERSION=$<< parameters.php_version >> \
+            --build-arg NODE_VERSION=$<< parameters.node_version >> \
+            --build-arg WITH_XDEBUG=$<< parameters.with_xdebug >> \
+            --push .
 
 workflows:
-  version: 2
   build_and_push:
     jobs:
-      - build_php_84:
-          context: docker
-          filters:
-            branches:
-              only:
-                - main
-      - build_php_84_xdebug:
-          context: docker
-          filters:
-            branches:
-              only:
-                - main
-      - build_php_83:
-          context: docker
-          filters:
-            branches:
-              only:
-                - main
-      - build_php_83_xdebug:
-          context: docker
-          filters:
-            branches:
-              only:
-                - main
-      - build_php_82:
-          context: docker
-          filters:
-            branches:
-              only:
-                - main
-      - build_php_82_xdebug:
-          context: docker
+      - build:
+          matrix:
+            parameters:
+              os: [linux, macos]
+              php_version: ["8.2", "8.3", "8.4"]
+              node_version: ["18.20.0", "20.12.0"]
+              with_xdebug: ["0", "1"]
           filters:
             branches:
               only:

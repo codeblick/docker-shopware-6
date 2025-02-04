@@ -1,4 +1,4 @@
-ARG PHP_VERSION=8.3
+ARG PHP_VERSION
 
 FROM php:${PHP_VERSION}-apache
 
@@ -97,7 +97,7 @@ RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
 ENV NVM_DIR /usr/local/nvm
 RUN mkdir -p $NVM_DIR
 
-ARG NODE_VERSION=20.12.0
+ARG NODE_VERSION
 RUN curl https://raw.githubusercontent.com/creationix/nvm/v0.39.7/install.sh | bash \
     && . $NVM_DIR/nvm.sh \
     && nvm install $NODE_VERSION
