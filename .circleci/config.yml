@@ -3,7 +3,7 @@ version: 2.1
 executors:
   docker-executor:
     docker:
-      - image: circleci/python:3.8  # Choose an appropriate base image
+      - image: circleci/python:3.8  # Use an appropriate base image with Docker support
 
 jobs:
   build_php:
@@ -11,17 +11,22 @@ jobs:
       - image: circleci/python:3.8  # Choose an appropriate base image
     steps:
       - checkout
-
-      # Define a reusable step for building the docker images
       - run:
           name: Build Docker Image
           command: |
-            # PHP and Node versions mapping
+            # PHP, Node versions, and Xdebug flag mappings
             PHP_VERSION=$1
             NODE_VERSION=$2
             XDEBUG_FLAG=$3
-            IMAGE_TAG="codeblick/shopware-6:php-${PHP_VERSION}${XDEBUG_FLAG}"
             
+            # Image Tag: without Xdebug or with Xdebug
+            if [ "$XDEBUG_FLAG" -eq 1 ]; then
+              IMAGE_TAG="codeblick/shopware-6:php-${PHP_VERSION}-xdebug"
+            else
+              IMAGE_TAG="codeblick/shopware-6:php-${PHP_VERSION}"
+            fi
+
+            # Docker login and build
             echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
             docker buildx create --use
             docker buildx build -q --platform linux/amd64,linux/arm64 -t $IMAGE_TAG \
