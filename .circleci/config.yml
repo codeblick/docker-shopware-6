@@ -48,6 +48,7 @@ workflows:
   build_and_push:
     jobs:
       - build:
+          context: docker
           matrix:
             parameters:
               platform: ["linux/amd64,linux/arm64"]
