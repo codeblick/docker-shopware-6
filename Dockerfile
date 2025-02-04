@@ -29,6 +29,7 @@ RUN docker-php-ext-install \
     mbstring \
     soap \
     xsl \
+    xml \
     gd \
     intl \
     ftp
