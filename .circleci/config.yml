@@ -40,6 +40,10 @@ workflows:
           with_xdebug: "0"
           requires:
             - setup
+          filters:
+            branches:
+              only:
+                - main
       - build:
           name: build_php_84_xdebug
           php_version: "8.4"
@@ -47,6 +51,10 @@ workflows:
           with_xdebug: "1"
           requires:
             - setup
+          filters:
+            branches:
+              only:
+                - main
       - build:
           name: build_php_83
           php_version: "8.3"
@@ -54,6 +62,10 @@ workflows:
           with_xdebug: "0"
           requires:
             - setup
+          filters:
+            branches:
+              only:
+                - main
       - build:
           name: build_php_83_xdebug
           php_version: "8.3"
@@ -61,6 +73,10 @@ workflows:
           with_xdebug: "1"
           requires:
             - setup
+          filters:
+            branches:
+              only:
+                - main
       - build:
           name: build_php_82
           php_version: "8.2"
@@ -68,6 +84,10 @@ workflows:
           with_xdebug: "0"
           requires:
             - setup
+          filters:
+            branches:
+              only:
+                - main
       - build:
           name: build_php_82_xdebug
           php_version: "8.2"
@@ -75,7 +95,7 @@ workflows:
           with_xdebug: "1"
           requires:
             - setup
-    filters:
-      branches:
-        only:
-          - main
+          filters:
+            branches:
+              only:
+                - main
