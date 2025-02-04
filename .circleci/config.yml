@@ -1,27 +1,59 @@
-version: 2
+version: 2.1
+
+parameters:
+  platform:
+    type: string
+    default: "linux/amd64,linux/arm64"
+  php_version:
+    type: string
+    default: "8.2"
+  with_xdebug:
+    type: string
+    default: "0"
+  node_version:
+    type: string
+    default: "18.20.0"
+
 jobs:
   build:
+    parameters:
+      platform:
+        type: string
+      php_version:
+        type: string
+      with_xdebug:
+        type: string
+      node_version:
+        type: string
     machine: true
     steps:
       - checkout
 
       - run: echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
+
       - run: docker buildx create --use
 
-      - run: docker buildx build -q --platform linux/amd64,linux/arm64 -t codeblick/shopware-6:php-8.4 --build-arg PHP_VERSION=8.4 --build-arg NODE_VERSION=20.12.0 --push .
-      - run: docker buildx build -q --platform linux/amd64,linux/arm64 -t codeblick/shopware-6:php-8.3 --build-arg PHP_VERSION=8.3 --build-arg NODE_VERSION=20.12.0 --push .
-      - run: docker buildx build -q --platform linux/amd64,linux/arm64 -t codeblick/shopware-6:php-8.2 --build-arg PHP_VERSION=8.2 --build-arg NODE_VERSION=18.20.0 --push .
-
-      - run: docker buildx build -q --platform linux/amd64,linux/arm64 -t codeblick/shopware-6:php-8.4-xdebug --build-arg PHP_VERSION=8.4 --build-arg NODE_VERSION=20.12.0 --build-arg WITH_XDEBUG=1 --push .
-      - run: docker buildx build -q --platform linux/amd64,linux/arm64 -t codeblick/shopware-6:php-8.3-xdebug --build-arg PHP_VERSION=8.3 --build-arg NODE_VERSION=20.12.0 --build-arg WITH_XDEBUG=1 --push .
-      - run: docker buildx build -q --platform linux/amd64,linux/arm64 -t codeblick/shopware-6:php-8.2-xdebug --build-arg PHP_VERSION=8.2 --build-arg NODE_VERSION=18.20.0 --build-arg WITH_XDEBUG=1 --push .
+      - run: |
+          TAG="php-$<< parameters.php_version >>$([ $<< parameters.with_xdebug >> == '1' ] && echo '-xdebug' || echo '')"
+          docker buildx build -q \
+            --platform $<< parameters.platform >> \
+            -t codeblick/shopware-6:$TAG \
+            --build-arg PHP_VERSION=$<< parameters.php_version >> \
+            --build-arg WITH_XDEBUG=$<< parameters.with_xdebug >> \
+            --build-arg NODE_VERSION=$<< parameters.node_version >> \
+            --push .
 
 workflows:
   version: 2
   build_and_push:
     jobs:
       - build:
-          context: docker
+          matrix:
+            parameters:
+              platform: ["linux/amd64,linux/arm64"]
+              php_version: ["8.2", "8.3", "8.4"]
+              with_xdebug: ["0", "1"]
+              node_version: ["18.20.0", "20.12.0"]
           filters:
             branches:
               only:
