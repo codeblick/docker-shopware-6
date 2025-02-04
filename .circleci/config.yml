@@ -1,22 +1,79 @@
-version: 2
+version: 2.1
+
+executors:
+  docker-executor:
+    docker:
+      - image: circleci/python:3.8  # Add the base image for your pipeline
+
 jobs:
-  build:
-    machine: true
+  build_php:
+    docker:
+      - image: circleci/python:3.8  # Choose an appropriate base image
     steps:
       - checkout
 
-      - run: echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
-      - run: docker buildx create --use
+      # Define a reusable step for building the docker images
+      - run:
+          name: Build Docker Image
+          command: |
+            # PHP and Node versions mapping
+            PHP_VERSION=$1
+            NODE_VERSION=$2
+            XDEBUG_FLAG=$3
+            IMAGE_TAG="codeblick/shopware-6:php-${PHP_VERSION}${XDEBUG_FLAG}"
+            
+            echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
+            docker buildx create --use
+            docker buildx build -q --platform linux/amd64,linux/arm64 -t $IMAGE_TAG \
+              --build-arg PHP_VERSION=$PHP_VERSION \
+              --build-arg NODE_VERSION=$NODE_VERSION \
+              --build-arg WITH_XDEBUG=$XDEBUG_FLAG \
+              --push .
 
-      - run: docker buildx build --platform linux/amd64,linux/arm64 -t codeblick/shopware-6:php-8.4 --build-arg PHP_VERSION=8.4 --build-arg NODE_VERSION=20.12.0 --push .
+  build_php_8_4:
+    executor: docker-executor
+    steps:
+      - run:
+          name: Build PHP 8.4 Without Xdebug
+          command: |
+            docker run --rm my-image-build-script 8.4 20.12.0 0
+      - run:
+          name: Build PHP 8.4 With Xdebug
+          command: |
+            docker run --rm my-image-build-script 8.4 20.12.0 1
+
+  build_php_8_3:
+    executor: docker-executor
+    steps:
+      - run:
+          name: Build PHP 8.3 Without Xdebug
+          command: |
+            docker run --rm my-image-build-script 8.3 20.12.0 0
+      - run:
+          name: Build PHP 8.3 With Xdebug
+          command: |
+            docker run --rm my-image-build-script 8.3 20.12.0 1
+
+  build_php_8_2:
+    executor: docker-executor
+    steps:
+      - run:
+          name: Build PHP 8.2 Without Xdebug
+          command: |
+            docker run --rm my-image-build-script 8.2 18.20.0 0
+      - run:
+          name: Build PHP 8.2 With Xdebug
+          command: |
+            docker run --rm my-image-build-script 8.2 18.20.0 1
 
 workflows:
   version: 2
   build_and_push:
     jobs:
-      - build:
-          context: docker
-          filters:
-            branches:
-              only:
-                - main
+      - build_php_8_4
+      - build_php_8_3
+      - build_php_8_2
+    filters:
+        branches:
+          only:
+            - main
