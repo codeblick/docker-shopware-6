@@ -2,8 +2,7 @@ version: 2.1
 
 executors:
   linux:
-    machine:
-      image: ubuntu-latest
+    machine: true
   macos:
     macos:
       xcode: 16.2.0
@@ -30,11 +29,6 @@ jobs:
           command: |
             if [ "<< parameters.os >>" == "macos" ]; then
               brew install docker
-            else
-              sudo apt-get update
-              sudo apt-get install -y docker.io
-              sudo systemctl start docker
-              sudo systemctl enable docker
             fi
 
       - run: echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
