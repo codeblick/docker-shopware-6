@@ -15,15 +15,13 @@ parameters:
     default: "18.20.0"
 
 jobs:
-  build_and_push:
+  build:
     parameters:
       platform:
         type: string
       php_version:
         type: string
       with_xdebug:
-        type: string
-      node_version:
         type: string
     machine: true
     steps:
