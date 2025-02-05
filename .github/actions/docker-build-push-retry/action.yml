@@ -55,3 +55,4 @@ runs:
       run: |
         echo "All attempts to build and push the Docker image have failed."
         exit 1
+      shell: bash
