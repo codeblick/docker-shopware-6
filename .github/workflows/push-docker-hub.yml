@@ -23,16 +23,16 @@ jobs:
           - linux/amd64
           - linux/arm64
         php_version:
-          - "8.0"
-          - "8.1"
+          #- "8.0"
+          #- "8.1"
           - "8.2"
           - "8.3"
           - "8.4"
         include:
-          - php_version: "8.0"
-            node_version: "16.20.2"
-          - php_version: "8.1"
-            node_version: "16.20.2"
+          #- php_version: "8.0"
+          #  node_version: "16.20.2"
+          #- php_version: "8.1"
+          #  node_version: "16.20.2"
           - php_version: "8.2"
             node_version: "18.20.0"
           - php_version: "8.3"
@@ -105,16 +105,16 @@ jobs:
       fail-fast: false
       matrix:
         php_version:
-          - "8.0"
-          - "8.1"
+          #- "8.0"
+          #- "8.1"
           - "8.2"
           - "8.3"
           - "8.4"
         include:
-          - php_version: "8.0"
-            node_version: "16.20.2"
-          - php_version: "8.1"
-            node_version: "16.20.2"
+          #- php_version: "8.0"
+          #  node_version: "16.20.2"
+          #- php_version: "8.1"
+          #  node_version: "16.20.2"
           - php_version: "8.2"
             node_version: "18.20.0"
           - php_version: "8.3"
