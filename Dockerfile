@@ -56,7 +56,6 @@ RUN apt-get install -y \
     wget \
     jq \
     git \
-    ftp \
     redis-tools
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg
 RUN docker-php-ext-configure intl
@@ -71,7 +70,8 @@ RUN docker-php-ext-install \
     intl \
     opcache \
     soap \
-    xsl
+    xsl \
+    ftp
 
 RUN pecl install apcu; \
     docker-php-ext-enable apcu; \
