@@ -55,7 +55,8 @@ RUN apt-get install -y \
     g++ \
     wget \
     jq \
-    git\
+    git \
+    ftp \
     redis-tools
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg
 RUN docker-php-ext-configure intl
