@@ -78,9 +78,12 @@ RUN pecl install apcu; \
     pecl install excimer; \
     docker-php-ext-enable excimer; \
     pecl install zstd; \
-    docker-php-ext-enable zstd; \
-    pecl install amqp; \
-    docker-php-ext-enable amqp
+    docker-php-ext-enable zstd
+
+ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
+
+RUN chmod +x /usr/local/bin/install-php-extensions && sync && \
+    install-php-extensions amqp
 
 RUN mkdir -p /usr/src/php/ext/redis; \
     curl -fsSL https://pecl.php.net/get/redis --ipv4 | tar xvz -C "/usr/src/php/ext/redis" --strip 1; \
