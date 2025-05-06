@@ -71,7 +71,8 @@ RUN docker-php-ext-install \
     opcache \
     soap \
     xsl \
-    ftp
+    ftp \
+    amqp
 
 RUN pecl install apcu; \
     docker-php-ext-enable apcu; \
