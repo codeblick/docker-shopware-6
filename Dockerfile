@@ -36,7 +36,7 @@ RUN curl -sSL -O https://packages.microsoft.com/config/debian/$(grep VERSION_ID 
     && rm packages-microsoft-prod.deb
 
 RUN apt-get update
-RUN apt-get install -y \
+RUN ACCEPT_EULA=Y apt-get install -y \
     # ext-gd
     libfreetype6-dev \
     libjpeg62-turbo-dev \
