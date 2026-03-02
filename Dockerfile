@@ -36,12 +36,13 @@ ENV ACCEPT_EULA=Y
 RUN apt-get update && apt-get install -y curl gnupg
 
 RUN curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | \
-    gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg
+    gpg --dearmor | \
+    tee /usr/share/keyrings/microsoft-archive-keyring.gpg > /dev/null
 
-RUN echo "deb [arch=amd64,arm64,armhf signed-by=/usr/share/keyrings/microsoft-prod.gpg] https://packages.microsoft.com/debian/13/prod trixie main" \
+RUN echo "deb [arch=amd64,arm64,armhf signed-by=/usr/share/keyrings/microsoft-archive-keyring.gpg] https://packages.microsoft.com/debian/13/prod trixie main" \
     > /etc/apt/sources.list.d/mssql-release.list
 
-RUN apt-get update
+RUN apt-get clean && apt-get update
 RUN apt-get install -y \
     # ext-gd
     libfreetype6-dev \
