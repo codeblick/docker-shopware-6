@@ -33,9 +33,11 @@ ENV PHP_XDEBUG_MAX_NESTING_LEVEL=256
 
 ENV ACCEPT_EULA=Y
 
-RUN curl -sSL -O https://packages.microsoft.com/config/debian/12/packages-microsoft-prod.deb \
-    && dpkg -i packages-microsoft-prod.deb \
-    && rm packages-microsoft-prod.deb
+RUN curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | \
+    gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg
+
+RUN echo "deb [arch=amd64,arm64,armhf signed-by=/usr/share/keyrings/microsoft-prod.gpg] https://packages.microsoft.com/debian/13/prod trixie main" \
+    > /etc/apt/sources.list.d/mssql-release.list
 
 RUN apt-get update
 RUN apt-get install -y \
