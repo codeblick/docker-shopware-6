@@ -33,6 +33,8 @@ ENV PHP_XDEBUG_MAX_NESTING_LEVEL=256
 
 ENV ACCEPT_EULA=Y
 
+RUN apt-get update && apt-get install -y curl gnupg
+
 RUN curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | \
     gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg
 
