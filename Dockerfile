@@ -1,4 +1,4 @@
-ARG PHP_VERSION
+ARG PHP_VERSION=8.5
 
 FROM php:${PHP_VERSION}-apache
 
@@ -17,7 +17,7 @@ ENV APCU_ENABLED=1
 ENV APCU_SHM_SIZE=128M
 ENV APCU_ENABLE_CLI=1
 
-ENV APACHE_DOCUMENT_ROOT /var/www/html/public
+ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 
 ENV PHP_XDEBUG_MODE=profile
 ENV PHP_XDEBUG_START_WITH_REQUEST=trigger
@@ -73,19 +73,10 @@ RUN apt-get install -y \
     unixodbc-dev
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg
 RUN docker-php-ext-configure intl
-RUN docker-php-ext-install \
-    gd \
-    iconv \
-    pdo \
-    pdo_mysql \
-    mbstring \
-    xml \
-    zip \
-    intl \
-    opcache \
-    soap \
-    xsl \
-    ftp
+RUN set -eux; \
+    for ext in gd pdo pdo_mysql mbstring xml zip intl soap xsl ftp; do \
+        docker-php-ext-install "$ext"; \
+    done
 
 RUN pecl install apcu; \
     docker-php-ext-enable apcu; \
@@ -93,8 +84,12 @@ RUN pecl install apcu; \
     docker-php-ext-enable excimer; \
     pecl install zstd; \
     docker-php-ext-enable zstd; \
-    pecl install sqlsrv pdo_sqlsrv; \
-    docker-php-ext-enable sqlsrv pdo_sqlsrv
+    if php -r 'exit(PHP_VERSION_ID >= 80300 ? 0 : 1);'; then \
+        pecl install sqlsrv pdo_sqlsrv; \
+        docker-php-ext-enable sqlsrv pdo_sqlsrv; \
+    else \
+        echo "Skipping sqlsrv/pdo_sqlsrv for PHP < 8.3"; \
+    fi
 
 ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
 
@@ -116,7 +111,7 @@ RUN a2enmod expires
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
-ENV NVM_DIR /usr/local/nvm
+ENV NVM_DIR=/usr/local/nvm
 RUN mkdir -p $NVM_DIR
 
 ARG NODE_VERSION
@@ -124,7 +119,7 @@ RUN curl https://raw.githubusercontent.com/creationix/nvm/v0.39.7/install.sh | b
     && . $NVM_DIR/nvm.sh \
     && nvm install $NODE_VERSION
 
-ENV PATH $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
+ENV PATH=$NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
 
 RUN curl -s -o /usr/local/bin/composer https://getcomposer.org/download/2.5.8/composer.phar && \
     chmod +x /usr/local/bin/composer

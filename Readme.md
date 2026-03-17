@@ -10,6 +10,8 @@ Docker-Image für Shopware 6 Entwicklungsumgebungen bei Codeblick. Basierend auf
 - `codeblick/shopware-6:php-8.3-xdebug`
 - `codeblick/shopware-6:php-8.4`
 - `codeblick/shopware-6:php-8.4-xdebug`
+- `codeblick/shopware-6:php-8.5`
+- `codeblick/shopware-6:php-8.5-xdebug`
 
 Tags mit `-xdebug`-Suffix enthalten eine vollständig aktivierte Xdebug-Installation (Build-Arg `WITH_XDEBUG=1`).
 
@@ -19,7 +21,7 @@ Tags mit `-xdebug`-Suffix enthalten eine vollständig aktivierte Xdebug-Installa
 - **Composer** 2.5.8
 - **Node.js** via NVM (Version konfigurierbar über Build-Arg `NODE_VERSION`)
 - **PHP-Extensions:** gd, iconv, pdo, pdo_mysql, mbstring, xml, zip, intl, opcache, soap, xsl, ftp, apcu, excimer, zstd, amqp, redis
-- **MSSQL-Unterstützung:** sqlsrv, pdo_sqlsrv (msodbcsql18, mssql-tools18)
+- **MSSQL-Unterstützung:** sqlsrv, pdo_sqlsrv (msodbcsql18, mssql-tools18) ab PHP 8.3
 - **Xdebug** (optional, siehe Build-Args)
 - **Tools:** git, jq, wget, redis-tools
 - Läuft als `www-data` (UID/GID 1000)
