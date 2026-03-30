@@ -128,4 +128,6 @@ RUN chown www-data:www-data /var/www; \
     usermod --non-unique --uid 1000 www-data; \
     groupmod --non-unique --gid 1000 www-data
 
+COPY --from=ghcr.io/shopware/shopware-cli:bin /shopware-cli /usr/local/bin/shopware-cli
+
 USER www-data
