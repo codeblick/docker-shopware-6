@@ -20,7 +20,7 @@ Tags mit `-xdebug`-Suffix enthalten eine vollständig aktivierte Xdebug-Installa
 - **Apache** mit aktivierten Modulen: `rewrite`, `headers`, `expires`
 - **Composer** 2.5.8
 - **Node.js** via NVM (Version konfigurierbar über Build-Arg `NODE_VERSION`)
-- **PHP-Extensions:** gd, iconv, pdo, pdo_mysql, mbstring, xml, zip, intl, opcache, soap, xsl, ftp, apcu, excimer, zstd, amqp, redis
+- **PHP-Extensions:** gd, iconv, pdo, pdo_mysql, mbstring, xml, zip, intl, opcache, soap, xsl, ftp, apcu, igbinary, excimer, zstd, amqp, redis
 - **MSSQL-Unterstützung:** sqlsrv, pdo_sqlsrv (msodbcsql18, mssql-tools18) ab PHP 8.3
 - **Xdebug** (optional, siehe Build-Args)
 - **Tools:** git, jq, wget, redis-tools
