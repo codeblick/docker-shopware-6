@@ -80,6 +80,8 @@ RUN set -eux; \
 
 RUN pecl install apcu; \
     docker-php-ext-enable apcu; \
+    pecl install igbinary; \
+    docker-php-ext-enable igbinary; \
     pecl install excimer; \
     docker-php-ext-enable excimer; \
     pecl install zstd; \
